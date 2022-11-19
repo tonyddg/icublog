@@ -118,6 +118,8 @@ eg. $\mathring{N}$
 eg. $\overline{ABC}$
 * 长箭头
 eg. $\overrightarrow{ABC}$
+* 相量\dot
+eg. $\dot{U}$
 #### 括号
 * () [] {} || [] 直接使用
 * 在括号前加上\big \Big \bigg \Bigg 调整大小，两侧都要有该符号
