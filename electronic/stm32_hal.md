@@ -28,7 +28,7 @@
     * Drivers/STM32F1xx_HAL_Driver/Inc
     * Drivers/STM32F1xx_HAL_Driver/Inc/Legacy
     * Drivers/CMSIS/Device/ST/STM32F1xx/Include
-2. 预定义宏 (可参考生成的 keil 项目中的 预定义宏)
+2. 预定义宏 (可参考生成的 keil 项目中的 预定义宏 LL 库有区别)
     * STM32F103xE (与 startup 文件有关)
     * USE_HAL_DRIVER 
 

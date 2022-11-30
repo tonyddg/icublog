@@ -123,7 +123,7 @@ $$\sigma'=\frac{dq'}{dS}=\vec{P}\cdot\vec{e_n}$$
 ## 电位移的高斯定理
 $$\oint_S\vec{D}d\vec{S}=\int_qdq$$
 $$\vec{D}=\varepsilon_0\varepsilon_r\vec{E}=\varepsilon\vec{E}=\varepsilon_0\vec{E}+\vec{P}$$
-$$\varepsilon_0=8.854\times10^-12C^2/(N\cdot m^2)$$
+$$\varepsilon_0=8.854\times10^{-12}C^2/(N\cdot m^2)$$
 $\varepsilon$ ==积分微面处的==电介质的介电常量
 ## 电容器 P236
 ### 电容
@@ -187,66 +187,3 @@ $\vec{e_r}$ 为电偶极子中心指向探测电荷的方向
 $$U=\frac{\vec{p}\cdot\vec{e_r}}{4\pi\varepsilon_0 r^2}$$
 ### 电偶极子的静电能 P241
 $$W=-\vec{p}\cdot\vec{E}$$
-
----
-# 磁场 P255
-$$F=q\vec{v}\times \vec{B}$$
-磁场强度定义
-$$B=\frac{F_{max}}{qv}$$
-单位 T
-## 毕奥-萨伐尔定律 P 257
-$$d\vec{B}=\frac{\mu_0}{4\pi}\frac{Id\vec{l}\times\vec{e_r}}{r^2}$$
-==$\vec{r}$ 为微电流指向P点的矢量==
-## 载流直导线 P258
-$$B=\frac{\mu_0 I}{2\pi a}$$
-a 距离直线的距离
-## 无限大载流平面上方 P261
-看作无数根无限长直导线组成
-$$B=\frac{\mu_0I}{2b}$$
-==b 平面宽度== 与到平面的距离无关
-## 载流圆环 P262
-(中轴线)
-$$B=\frac{\mu_0IR^2}{2(x^2+R^2)^{\frac{3}{2}}}$$
-(圆心)
-$$B=\frac{\mu_0I}{2R}$$
-x 到圆心距离
-R 圆环半径
-### 磁偶极子 P263
-以载流圆环作为基本模型
-$\vec{S}$ 载流圆环的面积
-$$\vec{m}=I\vec{S}$$
-$$\vec{B}=\frac{\mu_0\vec{m}}{2\pi R^3}$$
-## 磁场的高斯定律 P266
-$$\oint_S\vec{B}d\vec{S}=0$$
-### 不垂直于环形磁场的平面
-根据平面的左右端点做圆, 投影得到等效平面
-P267
-## 安培环路定律 P268
-$$\oint_L\vec{B}d\vec{l}=\mu_0I$$
-$$I=\int_S\vec{j}d\vec{S}$$
-* $\vec{j}$ 电流线密度(单线横切面上 $\vec{j}=\frac{d\vec{I}}{dS}$)
-* $S$ 以 $L$ 为变的任意曲面
-* $I$ 为通过 $S$ 的电流
-* $L$ 环路方向与 $I$ 方向成右手螺旋定律 计算时需要先确定正方向
-### 使用安培环路定律计算磁场强度 P271
-1. 做合适的安培环路, 使环路与 $\vec{B}$ 垂直或共线(矩形/圆形)
-2. $$\oint_L\vec{B}d\vec{l}=BL_{共线}=\mu_0I$$
-3. 计算单条路线上的环路积分, 可以利用对称法补全
-4. 利用不穿过电流的回路可以证明区域内 $B$ 大小方向相同 P273
-5. 默认无限长/环形螺线管外无磁场 P273
-(管内B均相同 $\to$ 管内磁场线为无限长直线/圆环 $\to$ 无磁极时, 磁场线为闭合曲线 $\to$ 外部无磁场)
-## 螺绕管 P264
-将螺绕管视为无限个独立的载流圆环
-每个微圆环上有微元电流
-$$dI=NI\frac{dl}{L}$$
-* $NI$ 半横截面上的总电流
-* $\frac{dl}{L}$ 微圆环个数的倒数
-* $dI$ 即为 半截面总电流 除以 微圆环个数
-螺绕管轴线上有
-$$dB=\frac{\mu_0dIR^2}{2(x^2+R^2)^{\frac{3}{2}}}$$
-$$B=\frac{\mu_0NI}{L}=\mu_0nI$$
-线圈密度
-$$n=\frac{N}{L}$$
-使用安培环路定律可知管内各处 $B$ 相同
-## 螺绕环 P275
-$$B=\frac{\mu_0NI}{2\pi R}=\mu_0nI$$
