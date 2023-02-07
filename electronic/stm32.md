@@ -707,7 +707,7 @@ ADC_RegularChannelConfig(ADCx, 采样通道, 通道次序(从1开始), 采样周
 1. 时钟源
 TIMxCLK , 由 APB1(36MHz) 分频产生, 库函数默认分频系数 x2, 即 72MHz
 2. 计数器时钟
-时钟源经分频得到计数器时钟 CK_CNT 用于驱动计数器计数, 可以为 PSC = 1~65536 任一个数
+时钟源经分频得到计数器时钟 CK_CNT 用于驱动计数器计数, 可以为 PSC = 0~65535 任一个数
 公式为 CK_CNT = TIMxCLK / (PSC + 1)
 3. 计数器
 CNT, 一个十六位计数器, 只能向上计数(基本 TIM), 最大值为 65535, 当达到自动重载寄存器时产生更新事件, 并清零从头开始计时
@@ -727,7 +727,9 @@ TIM_TimeBaseInitTypeDef
 ### 功能框架
 ####  时钟源
 作为计时器时钟源 CK_PSC
-1. 内部时钟源 即 72MHz
+1. 内部时钟源 即 72MHz(输出 PWM 时使用)
+    * Slave Mode 设为 Disable
+    * 仅设置 Clock Source
 2. 外部输入引脚 TIx (外部模式 1)
     0. 通过寄存器 CCMRx 控制
     1. 选择输入通道(共 4 个), 由位 CCxS 控制
@@ -753,7 +755,7 @@ TIM_TimeBaseInitTypeDef
 接收 CK_PSC 后, 经过预分频器输出 CK_CNT, 驱动计数. 最多可实现 1 - 65536 分频, 由寄存器 PSC 配置
 2. 计数器
     1. 递增计数模式
-        1. 从 0 开始计数, 知道与 ARR 寄存器的值相同, 产生上溢时间并从 0 重新开始
+        1. 从 0 开始计数, 直到与 ARR 寄存器的值相同, 产生上溢时间并从 0 重新开始
         2. 启用重复计数器后, 计时没从 0 开始, 重复计数器减 1, 为 0 时产生更新事件(UEV)
     2. 递减计数模式
         * 从 ARR 开始计数, 为 0 时重新开始, 生成下溢事件, 重复计数器同 1
@@ -766,15 +768,15 @@ TIM_TimeBaseInitTypeDef
 4. 重复计时器 RCR
     1. 仅限于高级计时器
     2. 一般计时器, 每次上溢事件与下溢事件均会产生更新事件
-    3. 高级寄存器要求 RCR 为 0 才产生更新事件
+    3. 高级计时器要求 RCR 为 0 才产生更新事件
 
 #### 输入捕获
 用于计算输入信号的脉宽, 频率或占空比
 
 1. 基本原理
-    * 当捕获到信号的跳变沿后, 把计数器 CNT 的值保存到寄存器 CCR 中, 把两次 CCR 的值相减得到脉宽或频率
+    * 当捕获到信号的跳变沿后, 把计数器 CNT 的值保存到寄存器 CCR(因此, CCR 记录了发生跳变时的 CNT) 中, 把两次 CCR 的值相减得到脉宽或频率
 2. 输入通道
-    * 输入被测量的通道, TIx, 对应引脚查表
+    * 输入被测量的通道, TIx(通常是 channel x 复用), 对应引脚查表
 3. 输入滤波器
     1. 滤波器的采样频率必须大于等于输入信号的两倍
     2. 由 CR1 寄存器的位 CKD 与 CCMR 寄存器的位 ICxF 控制
@@ -791,10 +793,12 @@ TIM_TimeBaseInitTypeDef
     3. 第二次捕获(第一次捕获未读取), 产生捕获溢出事件 CCxOF, 需要软件清零
 
 #### 输出比较
-通过计时器的外部引脚对外输出信号, 可用于输出 PWM
+* 通过计时器的外部引脚对外输出信号, 可用于输出 PWM
+* 由于 PWM 的宽度通过与计数器比较实现, 因此称为比较输出
 
-1. 比较寄存器 CCR
+1. 比较寄存器 CCR(Capture / Compare)
     1. 当计数器 CNT 的值与比较寄存器相同时, 改变输出参考信号 OCxREF 的极性
+        * 通过设置比较器寄存器的值, 实现脉冲宽度的调整(SetCompare)
     2. 产生比较中断 CCxI
     3. 输出参考信号 OCxREF 经一系列的控制后, 称为真正的输出信号 OCx/OCxN
 2. 死区发生器
@@ -810,6 +814,11 @@ TIM_TimeBaseInitTypeDef
 
 #### 断路功能
 即电机控制的刹车功能, 仅高级计时器有此功能
+
+### 常用缩写解释
+1. IC Input Channel
+2. OC Output Channel
+3. CC Capture/Compare Channel
 
 ### 基本 TIM 初始化结构体
 用于非基本计时器
@@ -831,7 +840,7 @@ TIM_OCInitTypeDef
 6. TIM_OCNPloarity 互补输出的极性
 7. TIM_IdleState 空闲状态下的输出信号
 
-### TIM PWM 初始化流程
+### TIM PWM 初始化流程(库函数)
 0. 时钟初始化
 1. 输出引脚 GPIO 设为 AF_PP 推挽复用
 2. TIM_TimeBaseInit 设置 TIM 的频率
@@ -840,3 +849,135 @@ TIM_OCInitTypeDef
 5. TIM_Cmd 启动定时器
 6. TIM_CtrlPWMOutputs 主输出使能(用于高级定时器)
 7. TIM_SetCompare1 修改脉频宽度
+
+### TIM PWM 初始化流程(LL库)
+1. Slave Mode - Disable
+2. Clock Source - Internal Clock
+3. Chnnelx - PWM Generation CHx
+4. 设置计数周期长度(重载寄存器/计数器时钟)/PWM模式(PWM 1 为普通模式, PWM2 为与 PWM 1 互补输出模式)
+    * 计数器时钟频率尽量大, 重载寄存器的值也尽量大, 实现更精确地控制占空比
+    * 一个 TIM 的四个通道可输入或输出, 但捕捉/采样周期相同
+5. LL_TIM_CC_EnableChannel 启动比较输出功能
+6. LL_TIM_EnableCounter 启动计数器(开始输出)
+7. LL_TIM_EnableAllOutputs 启动输出(用于高级计时器)
+8. LL_TIM_OC_SetCompareCHx 设置比较寄存器的值, 即改变脉冲宽度
+
+### TIM 输入捕捉 初始化流程(LL库)
+1. Slave Mode - Disable
+2. Clock Source - Internal Clock
+3. Chnnelx - PWM Generation CHx
+4. 设置采样周期/捕捉触发条件(上升沿/下降沿)
+5. LL_TIM_EnableIT_CCx 使能中断 CCx, 用于当通道 x 触发后产生中断
+6. LL_TIM_IC_GetCaptureCHx 获取捕获寄存器 CCRx 保存的值, 得到触发时计数器的值
+    1. 捕获沿同一个方向的触发两次, 相减得到 脉冲周期 = 采样周期 X 两次差值
+    2. 捕获上升沿时的计数后, 改为捕获下降沿, 相减得到 高电平长度 = 采样周期 X 两次差值
+    3. 脉冲周期 / 高电平长度 = 占空比
+7. 捕获触发中断有关函数
+    1. LL_TIM_EnableIT_CCx 启用捕获中断, 在捕获到触发时产生中断
+    2. LL_TIM_IsActiveFlag_CCx CCx 中断是否激活
+    3. LL_TIM_ClearFlag_CCx 清除 CCx 中断标志
+8. LL_TIM_IC_SetPolarity 设置捕获极性, 用于捕获高电平长度
+9. LL_TIM_CC_EnableChannel 启动比较输出功能
+10. LL_TIM_EnableCounter 启动计数器(开始输出)
+
+## 独立看门狗 IWDG
+本质为一个 12 位的递减计数器
+如果计数器的值减到 0, 则产生复位信号, 表示程序出错
+需要在复位前进行"喂狗", 重载计数器, 证明程序正常运行
+独立看门狗在停止模式和待机模式下仍然能工作
+
+### 功能框架
+#### 时钟
+1. 独立看门狗使用 LSI 时钟, 精度较低
+2. 通常 LSI 频率为 30 - 60KHz, 通过分频器得到计数器时钟 CK_CNT = 40 / 4 * 2 ^ PRV
+3. 设计溢出时间时应使重载时间足够大, 并且认为 LSI 为 60KHz
+
+### 计数器
+1. 独立看门狗为一个 12 位的递减计数器, 最大值位 0xFFF
+2. 计数器重载值存在重载寄存器 rlv 中, 这个值决定了独立看门狗的溢出时间
+3. 溢出时间 T = (4 * 2 ^ prv) / 40 x rlv(ms)
+
+### 状态控制
+1. 独立看门狗通过键寄存器 IWDG_KR 控制
+    1. 0xAAAA 重载计数器
+    2. 0x5555 PRV 与 RLV 使寄存器可写
+    3. 0xCCCC 启动 IWDG, 一旦启动则无法关闭
+2. 状态寄存器 SR 保存了 PRV 与 RLV 寄存器能否修改
+
+### IWDG LL库功能
+1. LL_IWDG_ReloadCounter(IWDGx); 重载计数器, 喂狗
+2. LL_IWDG_Enable(IWDGx); 启动 IWDG(当使用 IWDG 后自动启动)
+3. 可在 cube 设置 Do not generate function call 防止自动启动, 并使用 MX_IWDG_Init 启动
+
+## 窗口看门狗 WWDG
+与独立看门狗相同, 但是窗口看门狗具有上限(上窗口值)与下限(下窗口值)
+只有在上下限之间喂狗才不会触发复位信号
+如果过早或过晚喂狗, 都将产生错误
+窗口看门狗有固定的下限为 0x40, 无法改变, 但上限可以改变
+
+### 功能框架
+#### 时钟
+1. 窗口看门狗使用 PCLK1 时钟, 最大频率为 36MHz
+2. 分频系数由寄存器 CFR 位 WDGTB 配置
+3. 计数器周期 T = 1 / CNT_CK = Tplck1 * 4096 * (2 ^ WDGTB)
+
+#### 计数器
+1. 递减计数器最大为 7 位
+2. 在计数器为 0x40 时产生 死前中断, 用于复位前保存数据
+3. 上窗口值由寄存器 CFR 的位 W 设置, 其值必须大于 0x40, 否则无意义
+4. 计数器重载值存在寄存器 CR 的位 T 中, 范围为 0x7F - 0x40
+
+### CubeMX 初始化配置
+1. window value WWDG 的上窗口值
+2. free-running downcounter value WWDG 的重载值
+
+## 电源管理
+### 电源监控
+芯片通过 VDD 引脚从外部获取电源
+
+#### 上电复位与掉电复位
+1. 当电源电压异常时, 芯片会保持在复位状态, 防止强行工作带来的后果
+2. 当刚开始通电时 VDD < VPOR, 芯片处于掉电复位状态
+3. 当 VDD > VPOR 后, 芯片处于正常工作状态
+4. 当正常工作时, VDD < VPDR, 芯片处于掉电复位状态
+
+#### 电压检测器 PVD
+1. 除了自动检测, 还可以手动设置可编程电压检测器
+2. 当电压低于 VPVD 时, 产生 PVD中断(EXTI16)
+3. 可通过寄存器 PWR_CSR 设置 VPVD 等级(查表)
+
+### 电源系统
+1. VDDA 供电, 将 VDD 单独分出给 ADC 模块供电, 提高精度
+2. 调压器供电, 为除了备份域与待机电路外的电路供电(1.8V), 包括内核, 外设, RAM
+    1. 运行模式 1.8V 区域全功率运行
+    2. 停止模式 1.8V 区域所有时钟关闭(外设停止运行), 但保留内核寄存器和 SRAM 的内容
+    3. 待机模式 1.8V 区域完全断电, 所有内容丢失
+3. 备份供电, 通过 VBAT 供电(实际上为一个 3V 纽扣电池), 为 LSE 振动器, RTC 及备份寄存器供电, 断电后保持运行
+
+### 功耗模式
+STM32 具有 运行, 睡眠, 停止, 待机四种模式
+#### 唤醒方式
+1. 模式 WFI(wait for interrupt) 下, 由中断唤醒
+2. 模式 WFE(wait for event) 下, 由事件唤醒
+
+#### 睡眠模式
+1. 除 NVIC, 系统时钟外, 内核停止, 所有外设照常工作
+2. 任意中断均可唤醒
+3. 唤醒后, 先退出中断服务函数, 然后从进入睡眠处继续运行
+4. SLEEPDEEP = 0, 调用 WFI 或 WFE 指令进入
+
+#### 停止模式
+1. 使用任意 EXTI 中断唤醒
+2. 唤醒后需要等待 HSI 启动与模式切换
+3. 唤醒后, 先退出中断服务函数, 然后从进入睡眠处继续运行
+4. SLEEPDEEP = 1, PWR_CR 中位 PDDS = 0, 调用 WFI 或 WFE 指令进入
+
+#### 待机模式
+1. WKUP 上升沿, RTC 闹钟, 外部复位, IWDG 复位唤醒
+2. 唤醒后需要等待芯片复位
+3. 唤醒后相当于芯片复位, 从头开始执行代码
+
+### 电源管理函数
+1. __WFI() 从 WFI 模式进入睡眠
+2. __WFE() 从 WFE 模式进入睡眠
+3. PWR_PVDLevelConfig() 配置电压检测等级

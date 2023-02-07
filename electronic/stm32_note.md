@@ -35,7 +35,11 @@ unsigned b = 0b1110111;// 二进制字面量
 字面量默认为 int 型, 直接与 uint8/16 加减将溢出, ==使用字面量时(特别是作为二进制命令), 在最后加上 u, eg. 0xB1u== 
 
 ### 逻辑
-比较两个逻辑量是否相等时, 应用异或, 或转为数字, 比较是否相等
+比较两个逻辑量是否相等时, 应用异或 boolA ^ boolB , 或转为数字, 比较是否相等
+
+### 头文件引用
+1. 避免循环引用, 如在 a.h 中 不能有 include "a.h"
+2. 避免隐式的循环引用, 如在 a.h 中 include "b.h", b.h 中 include "a.h"
 
 ## 电路部分
 ### 电源
@@ -64,13 +68,15 @@ unsigned b = 0b1110111;// 二进制字面量
 
 ## BUG 诊断部分
 ### 通用
-1. 任何需要初始化的函数是否在程序中调用 是否调用了 XXXInit
+1. 任何需要初始化的函数是否在程序中调用 是否调用了 XXXInit/EnableXXX
+2. 使用外设时, 先完成各项设置/数据装载(eg. SPI 选择设备) 后, 再对外设使能(EnableXXX); 先关闭外设(DisableXXX), 再进行各项设置
 ### 库函数
 1. 是否正确初始化时钟 RCC_XXXPeripheralClockCmd
 2. 重复使用由 XXX_Cmd(XXX, ENABLE) 开启的功能时(如 DMA), 必须先调用 XXX_Cmd(XXX, DISABLE) 关闭后再开启
 3. 将 GPIO 设置为输入/复用/重映射/EXITn时, 需要启动 AFIO 功能 RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO,ENABLE);
 ### Cube
 1. 检查外设的初始化方式是否正确
+2. 使用外设前需要先调用 LL_XXX_Enable
 ### 中断
 1. Cube 中是否添加了 NVIC
 2. 代码中中断是否使能
@@ -81,6 +87,9 @@ unsigned b = 0b1110111;// 二进制字面量
 3. 调试中如果进入 HardFault_Handler 时, 根据调用堆栈判断出错位置
 4. 使用标准库时, 其中的 stm32f10x_it.c/h 不能注释里面已定义的中断函数
 5. 使用 DMA 时, 将数组作为传输地址时, 注意数组名即数组地址, 不需要再取地址
+6. 使用外设时, 遵守 载入数据 - 启动外设 - 关闭外设 - 读取数据 的原则
+7. ==不能保证结果大于 0 时, 避免无符号整型相减==
+
 ### EIDE
 1. 烧录配置中 接口属性使用 cmsis-dap.cfg
 2. debug 出错时, 检查是否勾选选项中的 将 axf 转为 elf
@@ -91,3 +100,12 @@ unsigned b = 0b1110111;// 二进制字面量
 1. 中断是否使能
 2. 是否添加 NVIC
 3. 波特率是否匹配
+
+### SPI
+1. 读取数据的同时接收数据
+2. 使用 SPI 外设时, 即使不发送数据, 也要发送 0xFF, 否则无法读到数据
+3. LL 使用 SPI 前需要先调用函数 LL_SPI_Enable
+
+### TIM
+1. 计时器没有使能函数 LL_TIM_ENABLE, 要使能计数器, TIM 才能正常工作 LL_TIM_EnableCounter; 关闭计数器即暂停
+2. 没有捕捉时调用 LL_TIM_GetCapture 可能导致异常

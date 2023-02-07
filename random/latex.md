@@ -80,6 +80,7 @@ eg. $\pm\; \times\; \div\; \cdot\; \cap\; \cup\; \geq\; \leq\; \neq\; \approx\; 
 左连接 ⟕
 右连接 ⟖
 外连接 ⟗
+垂直省略号 $\vdots$
 
 [参考](https://blog.csdn.net/Ying_Xu/article/details/51240291)
 #### 大型运算符
@@ -136,8 +137,8 @@ eg. $$ x_1, x_2, \dots, x_n\quad 1,2,\cdots,n\quad \vdots\quad \ddots $$
 eg.
 $$
 \begin{pmatrix} 
-a & b\\ 
-c & d \\
+a & b & e\\ 
+c & d & f\\
 \end{pmatrix}
 \begin{bmatrix} 
 a & b \\ 
@@ -160,6 +161,13 @@ a & b \\
 c & d 
 \end{smallmatrix}
 $$
+###### 矩阵格式
+1. \cdots 是横向的居中的省略号
+1. \vdots 是竖向的省略号
+1. \ddots 是对角线方向的省略号
+1. \ldots  是跟文本底线对齐的省略号
+1. & 对齐矩阵中的元素
+
 ##### 长公式
 * 无需对齐可使用gathered
 * 需要对齐使用aligned

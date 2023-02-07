@@ -63,6 +63,24 @@ _   下划线
 * 标记 将标记内容使用两个\=包括 如==marked==
 * 导入文件 \@import "文件"，具体见[导入文件](https://shd101wyy.github.io/markdown-preview-enhanced/#/zh-cn/file-imports)
 
+### 基本表格
+1. 行首
+\| 第一列 \| 第二列 \| ... |
+2. 分割(位于行首下, 每有一列就要一个)
+|--|--| ... | 
+3. 横向扩展
+空行, 或左侧 >
+4. 纵向扩展
+底下一行 ^, 使用 \<br\> 换行
+
+eg.
+|第一行|第二行|第三行|
+|--|--|--|
+|A|B|C|
+|horizon<br>next|congratulations||
+|^|>|abandoned|
+
+
 ### 其他说明
 <https://shd101wyy.github.io/markdown-preview-enhanced/#/zh-cn/>
 

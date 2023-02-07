@@ -1,4 +1,17 @@
 # 拾遗
+
+## 可变参数
+使用可变参数实现传入任意长度的参数
+1. [可变参数教程](https://www.runoob.com/cprogramming/c-variable-arguments.html)
+2. 通过 vsprintf 函数, 实现通过可变参数, 对 sprintf 再封装
+eg. 
+``` c
+va_list p;
+va_start(p, format);
+_offset += vsprintf((char*)(_buf + _offset), format, p);
+va_end(p);
+```
+
 ## 组合变量类型
 ### 常量指针
 const char* / char const* (等价)
