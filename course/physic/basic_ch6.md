@@ -168,6 +168,7 @@ $k$ 级亮条纹满足 $$\delta=2d\sqrt{n^2-n_1^2\sin^2i}=k\lambda(k=1,2,\dots)$
 ![](./basic_ch6_res/Fraunhofer_1.jpg)
 * 根据惠更斯原理, 光波在狭缝处可分解为无数个子光源, 光屏上的点 $P$ 为子光源共同聚焦的结果
 * 当入射狭缝的光源为平行光时, 称为单缝夫琅禾费衍射
+* ==无论单缝位置在哪, 衍射图像主要与透镜的位置有关==, 其中 $\theta$ 为光屏上 $P$ 点与透镜中心及中心线所成的角
 
 ### 叠加法推导单缝夫琅禾费衍射
 ![](./basic_ch6_res/Fraunhofer_2.jpg)
@@ -200,5 +201,54 @@ $k$ 级亮条纹满足 $$\delta=2d\sqrt{n^2-n_1^2\sin^2i}=k\lambda(k=1,2,\dots)$
     1. $n$ 为偶数, 子光源相互抵消, 为暗纹
     1. $n$ 为奇数, 至少有一部分子光源没有被抵消, 为次极大
 
-### 双缝夫琅禾费衍射
+### 双缝衍射与干涉
+![](./basic_ch6_res/Double_1.jfif)
 
+* 由于单缝衍射的图样与单缝位置无关, 因此两缝产生的条纹完全重合, 但光程差不同
+* 两图样的叠加可通过双缝干涉的方法计算
+* 设双缝中心距 $d$, 双缝缝宽 $a$
+
+#### 双缝衍射的光强分布推导
+1. 由于两束光来自同一光源, 因此最大光强 $$4I_1=4I_2=I_0\propto E_{10}^2=E_{20}^2$$
+1. 根据相干叠加理论, 可得 $$I_P=I_1+I_2+2\sqrt{I_1I_2}\cos\Delta\varphi\\=2I_1(1+\cos\Delta\varphi)=4I_1\cos^2(\frac{\Delta\varphi}{2})$$
+1. 其中光程差通过做垂线的方法可得 (不带入双缝干涉的近似式) $$2\beta=\Delta\varphi=\frac{2\pi}{\lambda}d\sin\theta$$
+1. 再考虑衍射的作用, 有 $I_0'=I_0(\frac{\sin\alpha}{\alpha})^2$
+1. 得到双缝衍射的光强公式 $$I=I_0(\frac{\sin\alpha}{\alpha})^2\cos^2\beta$$ 其中 $$\alpha=a\frac{\pi \sin\theta}{\lambda}$$ $$\beta=d\frac{\pi\sin\theta}{\lambda}$$
+
+
+#### 双缝衍射的图样特点
+1. 当 $\theta=0$, $I=I_0$ 光强最大
+1. 衍射中央明文角宽度 $\Delta\theta=\frac{2\lambda}{a}$, 干涉中央明文角宽度 $\Delta\theta'=\frac{\lambda}{d}$
+1. 由于 $d>a$, 因此 $\Delta\theta>\Delta\theta'$, 条纹的明暗由干涉决定, 与干涉明暗纹的条件相同
+1. 当衍射极小时, $a\sin\theta=k'\lambda$; 当干涉极大时, $d\sin\theta=k\lambda$, 当两者相等时有 $k=k'\frac{d}{a}$, 其中 $k$ 为明条纹的级数, $k'$ 为衍射因子第 $k$ 级极小, 当 $k$ 满足此条件时, 称 $k$ 为缺级, 可以根据缺级的位置, 判断 $\frac{d}{a}$ 大小
+1. 根据对称性, 左右两第 $k$ 缺级中, 共会有 $2\times(k-1)+1$ 条条纹
+
+## 衍射光栅
+![](./basic_ch6_res/Raster_1.jpg)
+
+* 设光栅常量即两缝中心距 $d$, 双缝缝宽 $a$, 共有 $N$ 条狭缝
+
+### 叠加法推导衍射光栅
+![](./basic_ch6_res/Fraunhofer_2.jpg)
+
+1. 每个狭缝产生的衍射图样重合, 且条纹之间的光程差均为 $\Delta\varphi=\frac{2\pi d\sin\theta}{\lambda}$, 光矢量振幅均为 $E_i=E_0\frac{\sin\alpha}{\alpha}$
+1. 因此也可以对各个狭缝在 $P$ 点的光振动相量叠加, 得到一个圆弧, 实际光振动相量即圆弧的弦 $\vec{B_N}$
+1. 将圆弧中的三角形 $\Delta COB_1$ 视为等腰三角形, $CO$ 为圆弧半径, 认为三角形顶角为 $\Delta\varphi\approx 0$ 
+1. 因此圆弧半径 $r=\frac{E_i/2}{\sin(\Delta\varphi/2)}$
+1. 圆弧圆心角为 $N\Delta\varphi$
+1. 对弦三角形 $\Delta COB_N$, 可以解出 $$E_N=2r\sin(\frac{N\Delta\varphi}{2})=E_0\frac{\sin\alpha}{\alpha}\cdot\frac{\sin(N\beta)}{\sin\beta}$$
+
+### 衍射光栅的光强分布
+1. 根据光矢量分布, 可得光强分布 $$I=I_0(\frac{\sin\alpha}{\alpha})^2\cdot(\frac{\sin(N\beta)}{\sin\beta})^2$$
+1. 定义主极大 $\beta=k\pi,(\frac{\sin(N\beta)}{\sin\beta})^2=N^2$, 此时分子分母均为 $0$, 但极限不为 $0$, 且取到最大值, 可得主极大的位置$$d\sin\theta=k\lambda(k=\pm 0,1,2,\dots)$$ 主极大位置与光栅缝数 $N$ 无关, 只与光栅常数 $d$ 有关
+1. 由于成像角度 $\theta\in(-\pi/2,\pi/2)$, 因此主极大的级数有限
+1. 定义极小 $\beta=(k+\frac{m}{N})\pi\;(m<N)$, 此时分子为 $\frac{\sin(N\beta)}{\sin\beta}=0$, 分母不为 $0$, 因此光强为 $0$, 可得极小位置为 $$d\sin\theta=(k+\frac{m}{N})\lambda\;(m=1,2,\dots,N-1)$$
+1. 定义次极大为两个极小之间的峰值, 通常比主极大小得多
+1. 根据极小定义, 当 $m=0$, 即主极大, 因此主极大相当于对将 $\theta$ 以 $\lambda$ 划分, 极小相当于对 $\lambda$ 再进行 $N$ 等分, 一个 $\lambda$ 中有 $N-1$ 条分界线, 次极大位于每小段之间, 共 $N-2$ 个 (两侧主极大各占一小格)
+1. 定义 $k$ 级主极大半角宽, 即一小格的角宽度 (注意 $\sin\theta$ 并非线性变化) $$\Delta\theta_k\approx\frac{\lambda}{N\cos\theta_k}$$ 因此随着缝数增多, 主极大 (亮条纹) 变窄
+1. 与双缝类似, 光栅衍射也存在缺级, 条件依然为 $k=k'\frac{d}{a}$ 可以此判断 $\frac{d}{a}$ 大小
+
+### 非水平入射情况
+![](./basic_ch6_res/Raster_2.jpg)
+
+当平行光不是水平入射, 而是存在入射角 $i\neq 0$, 则相当于入射前的光还存在一个额外的光程差, 此时光程差为 $$\delta=d(\sin\theta+\sin i)$$ 因此公式中 $$\beta=\frac{\pi d(\sin\theta+\sin i)}{\lambda}$$
