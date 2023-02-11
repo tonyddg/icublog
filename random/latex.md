@@ -196,5 +196,8 @@ eg. $ y=\begin{cases}
 -x&,x\leq 0\\
 x&,x>0
 \end{cases} $
-### 兼容性
+
+### 杂项
 1. 表格内不能使用块级标记
+1. [在 Latex 中使用化学表达式](https://www.firprin.com/mhchem/)
+1. [Latex 数学符号参考](https://www.firprin.com/latex/)
