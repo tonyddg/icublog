@@ -10,8 +10,12 @@ $$\frac{d^2x}{dt^2}+\omega^2x=0$$
 
 #### 运动方程
 $$x=A\cos(\omega t+\varphi)$$
-* 当运动方程为 $\sin$ 型时, 需要化为 $\cos$, 才可称为标准的简谐运动方程
-* 标准简谐运动方程 $A$ 不可取负
+* 当运动方程为 $\sin$ 型时, 需要化为 $\cos$, 才可称为标准的简谐运动方程, 修正方法
+$A\sin(\omega x+\varphi)=A\cos(\pi/2-\omega x-\varphi)$
+* 标准简谐运动方程 $A$ 不可取负, 修正方法
+$-A\cos(\omega x+\varphi)=A\cos(\omega x-\varphi+\pi)$
+* 标准简谐运动方程 $\omega$ 不可取负值, 修正方法
+$\cos(-\omega x+\varphi)=\cos(\omega x-\varphi)$
 
 ### 振动的物理量
 * 以下物理量均==要在标准振动方程中才有意义==
@@ -33,18 +37,18 @@ $$E=E_K+E_P=\frac{1}{2}kA^2$$
 
 #### 振幅
 1. 符号为 $A$
-2. 对于任意时刻下的 $x$ 与 $v$ 满足
+2. 对于任意时刻下的质点位置 $x$ 与质点速度 $v$ 满足
 $$A=\sqrt{x^2+\frac{v^2}{\omega^2}}$$
 
 #### 初相位
 1. 符号为 $\varphi$
 2. 对于任意时刻下的 $x$ 与 $v$ 满足
 $$\tan\varphi=-\frac{v}{\omega x}$$
-3. 初位相有两个取值(arc\tan), 需要根据速度判断
+3. 初位相有两个取值(arctan), 需要根据速度判断
 
 #### 角速度
 1. 符号为 $\omega$
-2. 有物体的本质属性决定
+2. 由物体的本质属性决定
 3. 与周期 $T$, 频率 $\nu$ 的关系
 $$T=\frac{2\pi}{\omega}$$ $$\nu=\frac{1}{T}=\frac{\omega}{2\pi}$$
 4. $\omega,\varphi,A$ 完全确定了简谐振动的运动状态
@@ -190,6 +194,7 @@ $$\Delta\varphi = (\varphi_2-\varphi_1)-\frac{2\pi}{\lambda}(r_2-r_1)$$
 6. 通过求出入射波在入射点的振动方程, 得到反射波在入射点的振动方程, 带入 $-(x-x_0)$(传播方向相反, 特定点的振动), 从而求出反射波的波函数
 
 ### 多普勒效应
+对于波速 $u$, 波源速度与频率 $v_S,\nu_S$, 接收端速度与频率 $v_R,\nu_R$, 满足
 $$\frac{\nu_R}{u-v_R}=\frac{\nu_S}{u-v_S}$$
 1. 信号源速度 $v_S$, 接收端速度 $v_R$
 2. 公式中的速度要取其在 $\overrightarrow{SR}$ 连线上的投影
