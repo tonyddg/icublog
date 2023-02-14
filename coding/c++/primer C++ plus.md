@@ -1053,3 +1053,219 @@ int* pi2 = const_cast<int*>(cpd);// 不允许, const_cast 不能改变类型
 即存在对应操作符重载函数的转换运算
 #### reinterpret_cast
 直接读取内存的强制类型转换
+
+## 右值引用
+### 左值与右值
+对于赋值运算
+```c++
+int a = 10;
+```
+
+#### 左值
+* 即赋值运算符左侧的值
+* 在 C++ 中表示在表达式之后依然需要的变量
+* 左值有地址
+
+#### 右值
+* 即赋值运算符右侧的值
+* 在 C++ 中表示在表达式结束时就不再存在的临时对象
+* 右值没有地址, 编译器以临时量处理
+
+### 右值引用
+* 使用两个 & 表示右值引用
+* 常量可以直接转变为右值, 但变量需要使用函数 std::move 说明其为一个右值 (变为右值后, 变量不能再使用)
+* 将右值引用作为函数参数时, 说明
+	1. 你可以将 std::move 后的变量或常量作为参数传入 (类似常量引用)
+	1. 你可以直接修改这个函数参数 (与常量引用不同)
+* 类型为右值引用的变量属于左值, 如果要将其向下传递, 需要再次使用 std::move
+
+### 右值引用应用
+#### 浅拷贝构造函数
+基于右值引用的特性, 可以定义出一套严格的浅拷贝函数, 保证程序的高效
+```c++
+class example
+{
+private:
+res* ptr;
+
+public:
+example(example&& obj):
+ptr(obj.ptr)
+{
+	// 提前置空, 防止 obj 构析导致 ptr 销毁
+	obj.ptr = nullptr;
+}
+
+example& operator=(example&& obj) {
+	ptr = obj.ptr;
+	obj.ptr = nullptr;
+	return this;
+}
+
+};
+```
+
+#### 数据结构赋值
+向数据结构插入值时, 可能插入后原值就不再需要, 因此可以以右值引用为参数
+
+## 智能指针
+* 智能指针是一系列来自头文件 <memory> 的对象
+
+### 智能指针特性
+* 智能指针可以用于管理指针, 防止指针忘记释放与裸指针造成危害
+* 智能指针以其封装的指针指向的资源类型为模板
+* 可以像普通指针使用 -> 运算符访问指针资源
+* 可以使用 * 运算符直接访问资源
+* 当智能指针生命周期结束将会被自动销毁 (利用构析函数, 保证指针即使销毁)
+* 智能指针使用 delete 销毁资源, 因此最好使用 new 创建资源 (不创建数组或采用 make_unique)
+* 智能指针以指针为参数的构造函数为 explict 型, 表明不会在函数传参 / 赋值操作中隐式转换, 需要显示调用构造函数
+```c++
+int* a = new int(100);
+// 允许
+std::unique_ptr<int> ptr(a); 
+// 不允许
+std::unique_ptr<int> ptr = a; 
+```
+
+### 独占智能指针
+unique_ptr 独享指针的资源, 不可复制 / 直接赋值
+```C++
+std::unique_ptr<T> ptr(T*)
+```
+
+unique_ptr 可以将指针地址作为构造函数, 也可以使用 make_unique 创建 (用法类似 new)
+```c++
+class nums
+{
+int _a, _b;
+public:
+nums(int a, int b):
+_a(a), _b(b){
+}
+};
+
+int main(){
+	unique_ptr<nums> ptr = make_unique<nums>(1, 2);
+	return 0;
+}
+
+```
+
+应使用 std::move() 方法转移控制权
+```c++
+unique_ptr<int> p(new int(5));
+unique_ptr<int> p2 = std::move(p);
+```
+
+当遍历以 unique_ptr 为对象的数据结构时, 应当使用引用的方式 (没有复制构造函数)
+```c++
+vector<unique_ptr<int>> arr;
+
+arr.push_back(make_unique<int>(1)); 
+arr.push_back(make_unique<int>(2)); 
+arr.push_back(make_unique<int>(3)); 
+arr.push_back(make_unique<int>(4));
+
+// 使用引用迭代变量
+for (const auto& iter : arr)
+{
+    cout << *iter << endl; 
+}    
+```
+
+可以使用 make_unique 创建数组, 但无法为创建的数组指定初始值
+```c++
+auto p = make_unique<int[]>(5);
+
+for (int i = 0; i < 5; ++i)
+{
+    p[i] = i;
+    cout << p[i] << endl;
+}
+```
+
+其他有关操作
+* 使用成员函数 release() 可以释放 unique_ptr 对指针的控制权, 返回保存的原始指针
+* 使用成员函数 reset(pointer) 可以修改 unique_ptr 管理的指针, 并且原先的指针将被删除
+* bool 类型转换中, 如果 unique_ptr 管理指针则返回 true, 否则返回 false (管理的指针为 nullptr)
+
+
+### 共享智能指针
+* share_ptr 采用引用计数法, 当指针的管理对象被全部销毁时, 才会销毁指针
+* 当资源的使用者只是临时调用, 则需要引用传递 (一般函数)
+* 当资源的使用者需要保存资源, 长期使用, 则需要按值传递 (构造函数 / 提取数据并保存)
+```C++
+std::share_ptr<T> ptr(T*)
+```
+
+share_ptr 允许相互赋值, 或将指针作为参数构造对象, 但最好使用 make_share 构建智能指针, 减少构造开销
+```c++
+auto sp1 = make_shared<int>(10);
+shared_ptr<int> sp2(new int(20));
+
+auto sp3 = sp1;
+auto sp4(sp1);
+```
+
+share_ptr 重载了 == 运算符, 当其引用同一个指针时, 返回 true
+```c++
+auto sp1 = make_shared<int>(10);
+shared_ptr<int> sp2(new int(10));
+auto sp3 = sp1;
+
+if(sp1 == sp3) ...; // 返回 true, 来自同一个资源
+if(sp1 == sp2) ...; // 返回 false
+```
+
+如果两个类可以相互管理, 则 share_ptr 可能导致循环引用
+示例中, father 与 son 在函数结束时仅删除了一次引用, 没有释放资源
+```c++
+struct Father
+{
+    shared_ptr<Son> son_;
+};
+
+struct Son
+{
+    shared_ptr<Father> father_;
+};
+
+int main()
+{
+    auto father = make_shared<Father>();
+    auto son = make_shared<Son>();
+
+    father->son_ = son;
+    son->father_ = father;
+
+    return 0;
+}
+```
+为了解决问题, 需要引入 weak_ptr, 作用与 share_ptr 相同, 但不会添加引用计数
+```c++
+struct Son
+{
+    weak_ptr<Father> father_;
+};
+```
+
+其他有关操作
+* 使用成员函数 reset(pointer) 可以修改 share_ptr 管理的指针, 并且原先的指针将被删除, 并置为 nullptr
+* 使用成员函数 use_count 可以获取有多少个 share_ptr 共享资源
+* 使用成员函数 get 可以获取资源的原始指针
+* bool 类型转换中, 如果 share_ptr 管理指针则返回 true, 否则返回 false (管理的指针为 nullptr)
+
+### 使用情况
+* 当要提取一个数据结构中符合条件的资源, 并组成一个新的数组, 适合采用共享智能指针
+* 当一个资源会被多个对象共享时, 适合采用共享智能指针
+* 当可能循环引用时, 应当避免循环引用, 获将不重要的一个对象的成员改为 weak_ptr
+* 对于其他一般情况, 如创建一个不定长的数组等, 都适合采用独占智能指针
+
+## 函数包装模板与 lambda 表达式
+### lambda 表达式
+[参考](https://learn.microsoft.com/zh-cn/cpp/cpp/lambda-expressions-in-cpp?source=recommendations&view=msvc-170)
+
+### 函数包装模板
+[参考](https://blog.csdn.net/weixin_44378800/article/details/115210731)
+#### 包装成员函数
+

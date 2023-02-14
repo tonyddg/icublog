@@ -382,3 +382,4 @@ delete[] ptr3;
 对于std中的智能指针, 默认使用 delete, 而不是 delete[]
 因此智能指针不能直接用于数组
 应采用 std::vector 或 std::string
+
