@@ -1263,9 +1263,124 @@ struct Son
 
 ## 函数包装模板与 lambda 表达式
 ### lambda 表达式
-[参考](https://learn.microsoft.com/zh-cn/cpp/cpp/lambda-expressions-in-cpp?source=recommendations&view=msvc-170)
+本质为一个类, 并通过重载 () 运算符的方式而可视为一个函数
+
+#### lambda 表达式基本格式
+```c++
+[捕获列表](参数列表)可变规格 -> 返回类型 {函数体}
+```
+
+1. 参数列表与函数体 与一般函数类似
+1. 返回类型 通常可以省略, 编译器将自动推断
+1. 可变规格 目前有标识符 mutable, 默认省略, 表示函数为 const 成员函数
+1. 捕获列表 规定 lambda 表达式如何访问外部的值
+
+#### 捕获列表详解
+1. [] 表示不捕获任何值
+1. [var] 表示按值捕获变量 var
+1. [=] 表示按值捕获父作用域的所有变量
+1. [&var] 表示按引用捕获变量 var
+1. [&] 表示按引用捕获父作用域的所有变量
+1. [this] 表示捕获对象成员
+	* 注意, 此处不仅是捕获指针 this
+	* 如果 this 被捕获, 将可以直接访问类的成员, 不需要通过 this 指针
+	* 类函数内定义的 lambda 表达式视为类的友元, 因此捕获 this 后可以直接访问私有成员
+	* [=] 将隐式地捕获 this
+1. [=, &var1, &var2] 表示引用捕获 var1 与 var2, 按值捕获其他变量
+1. [&, var1, var2] 表示按值捕获 var1 与 var2, 引用捕获其他变量
+* 不允许重复捕获, 如 [=, var], 将导致错误
+* 捕获的本质为将捕获的值作为对象成员保存在 lambda 表达式所生成的类中
+
+#### 可变规格
+* 目前有标识符 mutable
+* 没有 mutable 时, 认为重载 () 运算符的函数为 const, 因此无法修改捕获的值 (即对象成员)
+* 使用 mutable 后, 重载 () 运算符的函数没有修饰, 可以修改捕获值
+
+#### 定义 lambda 表达式
+##### 使用 auto 语法
+```c++
+auto add = [](int a, int b){return a + b;};
+```
+
+##### 函数包装器
+```c++
+std::function<int(int, int)> add = [](int a, int b)
+{
+	return a + b;
+};
+```
+如果要将 lambda 表达式作为函数的参数, 则需要使用 std::function
+
+#### lambda 表达式适用范围
+1. 可以在函数内定义 lambda 表达式
+1. 可以嵌套定义 lambda 表达式
+1. 利用 function, 可以将 lambda 表达式作为参数传递
+1. lambda 表达式可以配合模板使用
+```c++
+template <typename T>
+void print_all(const vector<T>& v)
+{
+    for_each(v.begin(), v.end(), [](const T& n) 
+	{ 
+		cout << n << endl; 
+	});
+}
+```
+
+#### lambda 表达式应用
+在头文件 <algorithm> 中, 有与 lambda 表达式配合的函数
+1. for_each 函数中使用了 lambda 表达式遍历数据结构
+1. find_if 函数中使用了 lambda 遍历数据结构查找符合的元素
+1. sort 规定 sort 的比较函数
 
 ### 函数包装模板
-[参考](https://blog.csdn.net/weixin_44378800/article/details/115210731)
+* 定义于头文件 <functional>
+* 可用于包装 函数, 函数指针, 函数对象 (重载 () 运算符), lambda 表达式
+* 需要在 function 的模板中定义函数的返回值与参数
+```c++
+std::function<返回值(参数 1 类型, 参数 2 类型, ...)>
+```
+
+#### 包装一般函数
+1. 对于普通函数, 直接使用 函数名
+1. 对于模板函数, 使用 函数名<模板参数>
+1. 对于静态成员, 使用 类名::函数名
+
 #### 包装成员函数
+* 包装成员函数时, 需要通过函数 bind() 实现
+* bind() 可以将成员函数与类的实例绑定起来
+* 使用  将成员函数指针与对象绑定
+	* 其中 placeholders::_1 为占位符, 具体作用见下
+	* 将返回一个 function 类型的函数
+
+#### 其他包装
+1. 对于 lambda 表达式, 直接等于号构造
+1. 对于空函数, 以 nullptr 作为参数传入, 此时调用将导致异常
+1. 对于函数对象, 以函数对象的实例作为参数传入
+
+#### bind 函数
+bind 函数是一个用于包装函数, 将函数缩小化的工具, 也可用于绑定成员函数
+
+##### 包装一般函数
+bind(函数指针, 函数参数)
+* 可以指定具体的函数参数, 也可以使用占位符 placeholders::_n (从 1 开始)
+* 当使用占位符时, 将作为返回函数的参数出现
+* 被包装函数有多少个参数时, 给出多少个参数 / 占位符
+eg.
+```c++
+int add(int a, int b) {return a + b;}
+
+int main()
+{
+	// 此时 fun 相当于函数
+	// fun(int a){return a + 10;}
+	function<int(int)> fun =
+		bind(add, placeholders::_1, 10);
+	return 0;
+}
+```
+
+##### 包装成员函数
+bind(成员函数指针, 对象实例指针, placeholders::_1, ...)
+* 其他与一般函数类似, 但第一个参数为对象实例指针
 
