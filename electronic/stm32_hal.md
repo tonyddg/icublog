@@ -1,3 +1,5 @@
+[待学习的资料](https://blog.csdn.net/qq_35787848/article/details/124512640)
+
 # CubeMX
 ## 创建 EIDE 项目
 ### 创建 CubeMX 项目
@@ -79,6 +81,20 @@ extern "C"{
 # HAL 库
 [学习教程](http://www.openedv.com/forum.php?mod=viewthread&tid=309468&highlight=hal%BF%E2)
 
+## 外设通用
+### 外设句柄
+1. HAL 库通过操作外设句柄以操作外设
+1. 外设句柄类型通常为 XXX_HandleTypeDef
+1. 外设句柄通用命名为 h + 外设名 + 序号
+1. 通过 extern XXX_HandleTypeDef hxxxx1; 获取外设句柄
+
+### IO 状态
+1. IO 函数通常会返回 HAL_StatusTypeDef, 具有值   
+    1. HAL_OK       = 0x00U
+    1. HAL_ERROR    = 0x01U
+    1. HAL_BUSY     = 0x02U
+    1. HAL_TIMEOUT  = 0x03U
+
 ## GPIO
 ### HAL 常用操作
 1. 设置引脚电平
@@ -106,4 +122,28 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 ```c++
 __HAL_GPIO_EXTI_CLEAR_IT(GPIO_Pin)
 ```
+
+## UART
+### DMA 发送数据
+#### 使用注意
+1. 使用 DMA 模式时, 需要在 DMA Setting 中, 使能相应的 DMA
+1. 除了使能 DMA, 还要开启 UART 的中断
+#### 发送流程
+1. 使能相关中断, 并通过发送数据
+1. 发送完成后进入中断
+1. 关闭有关中断的使能
+1. 进入回调函数 HAL_UART_TxCpltCallback(UART_HandleTypeDef* huart)
+
+### DMA 接收数据
+通常使用 HAL_UARTEx_ReceiveToIdle_IT/DMA 函数高效接收数据
+#### IDLE 标志位
+当总线空闲时, 将触发 IDLE 标志位, 通常 IDLE 标识在 ==RX 不再接收到数据时==触发 (RX 没有数据不会触发 IDLE 标志位), 因此可以通过判断 IDLE 标志位来判断接收是否结束
+
+#### 接收流程
+1. 使能相关中断并等待 RX 接收数据
+1. RX 无法接收到数据时, 触发 IDLE 标识, 进入中断
+1. 关闭有关中断使能
+1. 进入回调函数 (注意带有接收数据信息) HAL_UARTEx_RxEventCallback(UART_HandleTypeDef* huart, uint16_t size)
+
+
 
