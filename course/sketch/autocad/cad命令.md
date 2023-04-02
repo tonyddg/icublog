@@ -1,3 +1,4 @@
+# 快捷键
 |名称|快捷键|
 |---|---|
 |几何绘图 | |
@@ -24,12 +25,17 @@
 |Offset（偏移）|O|
 |Erase（删除）|E|
 |Extend（延伸）|EX|
-|Trim（修建）|TR|
+|Trim（修剪）|TR|
 |Lengthen（伸长）|LEN|
 |Scale（比例缩放）|SC|
+|Align（对齐）|AL|
 |尺寸标注 | |
 |Linear（线性）|DLI|
 |Radius（半径）|DRA|
 |Diameter（直径）|DDI|
 |Angular（角度）|DAN|
 |Tolerance（几何公差）|TOL|
+
+# 特殊命令使用
+## 对齐 Align
+可以使目标图形上的一边与指定边对齐, 可用于刚化反转法等方法
