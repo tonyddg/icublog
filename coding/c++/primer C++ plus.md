@@ -1040,6 +1040,8 @@ if(typeid(a) === typeid(b))
 typeid 最好仅用于调试
 
 ### 类型转换运算符
+cast 即丢弃, 即告诉编译器丢弃某些特性检查
+
 #### const_cast
 用于将一个常量指针转化为普通指针
 ```C++
@@ -1109,6 +1111,8 @@ example& operator=(example&& obj) {
 向数据结构插入值时, 可能插入后原值就不再需要, 因此可以以右值引用为参数
 
 ## 智能指针
+[参考](https://learn.microsoft.com/zh-cn/cpp/cpp/smart-pointers-modern-cpp?source=recommendations&view=msvc-170)
+
 * 智能指针是一系列来自头文件 <memory> 的对象
 
 ### 智能指针特性
@@ -1262,6 +1266,8 @@ struct Son
 * 对于其他一般情况, 如创建一个不定长的数组等, 都适合采用独占智能指针
 
 ## 函数包装模板与 lambda 表达式
+[参考](https://learn.microsoft.com/zh-cn/cpp/cpp/lambda-expressions-in-cpp?source=recommendations&view=msvc-170)
+
 ### lambda 表达式
 本质为一个类, 并通过重载 () 运算符的方式而可视为一个函数
 
@@ -1352,6 +1358,7 @@ std::function<返回值(参数 1 类型, 参数 2 类型, ...)>
 1. 对于函数对象, 以函数对象的实例作为参数传入
 
 #### bind 函数
+[参考](https://learn.microsoft.com/zh-cn/cpp/standard-library/functional-functions?view=msvc-170)
 bind 函数是一个用于包装函数, 将函数缩小化的工具, 也可用于绑定成员函数
 
 ##### 包装一般函数
@@ -1377,3 +1384,82 @@ int main()
 bind(成员函数指针, 对象实例指针, placeholders::_1, ...)
 * 其他与一般函数类似, 但第一个参数为对象实例指针
 
+## 常量表达式
+[参考](https://learn.microsoft.com/zh-cn/cpp/cpp/constexpr-cpp?view=msvc-170)
+1. 使用关键字 constexper 表示, 可用于修饰变量, 函数, 构造函数, 模板等
+1. 常量表达式将会在编译时就进行运算, 以此减少运行时的消耗
+1. 大部分情况下, 常量表达式等价于常量 const
+
+### constexpr 变量
+1. 常量表达式变量必须是文本类型, 即满足以下规则的类型
+	1. void
+	1. 标量类型 (int 等)
+	1. 引用, 指针(定义为 constexpr 时, 指针本身也视为常量, 以此 constexpr const char* 表示指向的值不能改变, 指针本身也不可改变)
+	1. 以上类型的数组
+	1. 具有 constexper 构造函数且不移动或复制构造的类, ==并且使用默认构造函数==
+1. 常量表达式必须在声明时初始化
+1. 类必须使用 constexper 构造函数初始化, 并且 constexper 构造函数必须是内联函数 (定义在类体内)
+1. 初始化值必须是 const 或 constexper 及其函数 / 计算结果
+1. 注意常量表达式不可用于修饰成员, 只有构造函数是常量表达式即可
+
+### constexpr 函数
+1. constexpr 函数是在使用需要它的代码时，可在编译时计算其返回值的函数
+1. 当用函数参数为 constexpr 时, 将在编译时计算结果, 返回 constexpr
+1. 否则将和一般函数相同, 在运行时计算
+1. constexpr 函数将通过隐式方式 inline
+1. constexpr 函数具有以下要求
+	1. 参数为按值传递或常量引用, 常量引用数组
+	1. 允许递归, 循环语句, if, switch 等
+	1. 不允许 try, goto
+
+### constexpr 实例
+```c++
+// 计算乘方, 使用常量引用传递值
+constexpr float exp2(const float& x, const int& n)
+{
+    return n == 0 ? 1 :
+        n % 2 == 0 ? exp2(x * x, n / 2) :
+        exp2(x * x, (n - 1) / 2) * x;
+}
+
+// 获取数组长度
+template<typename T, int N>
+constexpr int length(const T(&)[N])
+{
+    return N;
+}
+
+// 递归
+constexpr int fac(int n)
+{
+    return n == 1 ? 1 : n * fac(n - 1);
+}
+
+// 构造函数
+class Foo
+{
+public:
+    constexpr explicit Foo(int i) : _i(i) {}
+    constexpr int GetValue() const
+    {
+        return _i + _c;
+    }
+private:
+    int _i;
+
+	static constexpr int _c = 10; 
+};
+
+int main()
+{
+    // foo is const:
+    constexpr Foo foo(5);
+    // foo = Foo(6); //Error!
+
+    // Compile time:
+    constexpr float x = exp2(5, 3);
+    constexpr float y { exp2(2, 5) };
+    constexpr int val = foo.GetValue();
+    constexpr int f5 = fac(5);
+}
+```
