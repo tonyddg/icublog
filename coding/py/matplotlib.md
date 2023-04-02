@@ -30,7 +30,7 @@ ax.plot([1, 2, 3, 4], [4, 3, 2, 1])
 ## 创建图像
 
 ### 创建 Axe
-使用 fig, axes = plt.subplot(x, y) 创建图像
+使用 fig, axes = plt.subplots(x, y) 创建图像
 其中 fig 为 Figure 对象, axes 为 Axe 对象数组(如果仅有一个 axe, 则为 Axe 对象), 如果 y != None, 则为二维数组
 
 ## 曲线图
@@ -119,3 +119,17 @@ axe.set_aspect()
 * 参数 "equal" 表示 x, y 轴等长
 * 参数 "auto" 表示自动设置
 
+### 设置 Legend
+axe.legend(字符串数组)
+* 通过字符串数组设置各条曲线的 legend, 而不是传入多个字符串
+
+### 通用子图像设置
+fig, axes = plt.subplot(x, y, layout="constrained")
+* 创建 $x\times y$ 的子图像
+* 需要设置参数 layout="constrained" 保证子图像合理排列
+* 返回值 axes 为一个 $x\times y$ 的数组, 包含了各个子图像
+
+### 快速子图像设置
+axe = plt.subplot(x, y, n)
+* 用于快速创建子图像
+* n 为子图像的索引, 需要从 1 开始计
