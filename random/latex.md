@@ -119,6 +119,8 @@ eg. $\mathring{N}$
 eg. $\overline{ABC}$
 * 长箭头
 eg. $\overrightarrow{ABC}$
+* 圆弧
+eg. $\overgroup{AB}$
 * 相量\dot
 eg. $\dot{U}$
 #### 括号

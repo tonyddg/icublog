@@ -80,6 +80,10 @@ eg.
 |horizon<br>next|congratulations||
 |^|>|abandoned|
 
+### 插入键盘图标
+使用 \<kbd\>\</kbd\> 包裹按键名称
+eg.
+<kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>V</kbd>
 
 ### 其他说明
 <https://shd101wyy.github.io/markdown-preview-enhanced/#/zh-cn/>
