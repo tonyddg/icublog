@@ -427,7 +427,7 @@ res = [结果1 if 判断条件 else 结果2 for 变量名 in 原列表]
 ## 文件操作
 ### 打开文件
 ```python
-file a = open(file, mode = 'r', encoding = 'utf8')
+a = open(file, mode = 'r', encoding = 'utf8')
 ```
 * file
 文件路径
