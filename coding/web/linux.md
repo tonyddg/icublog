@@ -1,8 +1,18 @@
-# 美化
-## 终端
-1. apt安装 zsh
-2. chsh 将终端更换为zsh
-3. 安装oh-my-zsh curl -L http://install.ohmyz.sh | sh
+# oh-my-zsh
+## 安装本体
+1. [安装教程](https://zhuanlan.zhihu.com/p/35283688)
+1. 运行 sudo chsh -s /bin/zsh 改变默认终端为 zsh
+1. logout 或重启, 使修改生效
+
+## 安装 p10k 主题
+1. [安装依赖字体](https://blog.csdn.net/qq_39785418/article/details/122796861)
+1. [安装教程](https://www.cnblogs.com/luoxian1011/p/15854153.html)
+1. 修改主题时运行命令 p10k configure
+
+## 安装插件
+1. [安装插件教程](https://zhuanlan.zhihu.com/p/454191603)
+1. zsh-completions 插件对命令参数 -- 后按 tab 生效
+1. 需要记得修改配置文件
 
 # vim
 ## 基本操作
@@ -59,13 +69,34 @@ ctrl+v 进入块选择模式，移动光标框选块
 1. I 插入模式 对块中的一行操作，esc退出后对所有行生效(多行注释)
 2. d 删除块中的内容
 
+# Fcitx
+## 安装
+1. ubuntu 20.4 前的版本安装 fcitx, 不安装 fcitx5
+1. 打开配置窗口需要安装 fcitx-config-gtk3
+1. 除了框架, 还需要安装输入法, 如 fcitx-googlepinyin
+1. 打开 LanguageSupport 设置, 设置默认输入法为 fcitx
+1. 在 StartUp 设置中, 将 fcitx 设置为开机启动
+1. 配置文件 etc/profile (具体查资料)
+1. 重新启动
+
+## 使用
+1. 打开 fcitx-configuration 前保证 fcitx 已打开
+1. 添加输入法, 添加时需要取消勾选 show only current language 
+
+
 # linux
 ## 基本操作
 ### apt
+(注意, 以下为子命令, 不是参数, 不需要 --)
+
 1. install
 安装
 2. remove
 删除
+3. update
+获取软件更新列表
+4. upgrade
+更新软件
 ### 文件列表
 1. ls
     * -a 显示隐藏文件(all)
